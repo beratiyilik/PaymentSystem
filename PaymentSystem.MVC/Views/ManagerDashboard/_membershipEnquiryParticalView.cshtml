@@ -1,0 +1,65 @@
+﻿@model PaymentSystem.MVC.Filters.MembershipFilter
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Membership Enquiry Page</h4>
+</div>
+<div class="modal-body">
+
+    @using (Html.BeginForm("EnquiryMembership", "ManagerDashboard", FormMethod.Post))
+    {
+        <fieldset>
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            @if (@ViewBag.Message != null)
+            {
+                <div style="border: 1px solid red">
+                    @ViewBag.Message
+                </div>
+            }
+            <table>
+                <tr>
+                    <td>@Html.LabelFor(a => a.EntityType)</td>
+                    <td>@Html.DropDownListFor(m => m.EntityType, new SelectList(Enum.GetValues(typeof(PaymentSystem.Common.Enum.Enum.EntityType))), new { @class = "form-control" })</td>
+                    <td>@Html.ValidationMessageFor(a => a.EntityType)</td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(a => a.NationalIdentificationNumber)</td>
+                    <td>@Html.TextBoxFor(a => a.NationalIdentificationNumber, new { @class = "form-control" })</td>
+                    <td>@Html.ValidationMessageFor(a => a.NationalIdentificationNumber)</td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(a => a.TaxNumber)</td>
+                    <td>@Html.TextBoxFor(a => a.TaxNumber, new { @class = "form-control" })</td>
+                    <td>@Html.ValidationMessageFor(a => a.TaxNumber)</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" value="EnquiryMembership">Enquiry</button>
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+        </fieldset>
+    }
+
+</div>
+
+@section Scripts
+{
+    <script>
+        ; (function () {
+            'use strict';
+
+            setTimeout(() => {
+                $("#vb-message").hide();
+
+            }, 3000);
+
+        })();
+    </script>
+}

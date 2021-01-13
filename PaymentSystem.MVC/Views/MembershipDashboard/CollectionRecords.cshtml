@@ -1,0 +1,57 @@
+﻿@using PaymentSystem.MVC.Filters
+@using PaymentSystem.MVC.Models
+@model  IEnumerable<PaymentSystem.MVC.Models.AccrualLoanViewModel>
+@{
+    ViewBag.Title = "CollectionRecords";
+    var childs = Model.SelectMany(m => m.CollectionRecords);
+}
+
+<h2>Paid Bills</h2>
+
+@if (@ViewBag.Message != null)
+{
+    <div id="vb-message" style="border: 1px solid red">
+        @ViewBag.Message
+    </div>
+}
+
+<table class="table table-striped table-bordered table-responsive table-hover">
+    <tr>
+        <th>Accrual Loan RefNumber</th>
+        <th>Invoice RefNumber</th>
+        <th>Period</th>
+        <th>Total Amount</th>
+        <th>Paid Amount</th>
+        <th>Paid Date</th>
+    </tr>
+    @foreach (var d in childs)
+    {
+        var parent = Model.FirstOrDefault(m => m.Id == d.AccrualLoanId);
+
+        var rl = parent.HasLoan ? parent.RemainingLoan.ToString("#.00") : "";
+        <tr>
+            <td>@parent.RefNumber</td>
+            <td>@d.RefNumber</td>
+            <td>@parent.CreatedAt.ToString("MMM yyyy")</td>
+            <td>@parent.Amount.ToString("#.00")</td>
+            <td>@d.Amount.ToString("#.00")</td>
+            <td>@d.CreatedAt.ToString("dd MMM yyyy")</td>
+        </tr>
+    }
+</table>
+
+
+@section Scripts
+{
+    <script>
+        ; (function () {
+            'use strict';
+
+            setTimeout(() => {
+                $("#vb-message").hide();
+
+            }, 3000);
+
+        })();
+    </script>
+}

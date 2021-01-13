@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="container body-content">
+
+        <nav class="navbar navbar-dark bg-primary">
+            <span class="navbar-text">
+                Membership
+            </span>
+        </nav>
+
+        @Html.ActionLink("Dashboard Page", "Index", "MembershipDashboard", new { @class = "btn btn-warning" })
+
+        @Html.ActionLink("Accrual Loans", "AccrualLoans", "MembershipDashboard", new { @class = "btn btn-primary" })
+
+        @Html.ActionLink("Paid Bills", "CollectionRecords", "MembershipDashboard", new { @class = "btn btn-primary" })
+
+        @Html.ActionLink("Logout", "Logout", "MembershipAuth", null, new { @class = "btn btn-danger" })
+
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,191 @@
+﻿@using PaymentSystem.MVC.Filters
+@model  IEnumerable<PaymentSystem.MVC.Models.UserViewModel>
+@{
+    ViewBag.Title = "EnquiryMembership";
+}
+
+<h2>Welcome Enquiry Membership Results</h2>
+
+@if (@ViewBag.Message != null)
+{
+    <div id="vb-message" style="border: 1px solid red">
+        @ViewBag.Message
+    </div>
+}
+
+<table class="table table-bordered table-responsive table-hover">
+    <tr>
+        <th>FullName</th>
+        <th>Identification / Tax</th>
+        <th>UserType</th>
+        <th>EntityType</th>
+        <th>Email</th>
+        <th>UserName</th>
+        <th>Operations</th>
+    </tr>
+    @foreach (var d in Model)
+    {
+        var nbr = d.EntityType == PaymentSystem.Common.Enum.Enum.EntityType.LegalEntity ? d.TaxNumber : d.NationalIdentificationNumber;
+        var rl = d.HasLoan ? d.RemainingLoan.ToString("#.00") : "";
+
+        <tr>
+            <td>@d.FullName</td>
+            <td>@nbr</td>
+            <td>@d.UserType</td>
+            <td>@d.EntityType</td>
+            <td>@d.Email</td>
+            <td>@d.UserName</td>
+            <td>
+                @{
+                    if (d.UserType == PaymentSystem.Common.Enum.Enum.UserType.Membership)
+                    {
+                        // var deposit = d.AccrualLoans.Where(m => m.Type == PaymentSystem.Common.Enum.Enum.AccrualLoanType.Deposit).FirstOrDefault();
+
+                        // var hasRefund = deposit != null && deposit.CollectionRecords.Any(m => m.IsRefund) && deposit.CollectionRecords.Sum(m => m.Amount) == 0;
+
+                        if (!d.HasLoan && !d.HasDepositRefunded)
+                        {
+                            <button id="@d.Id" data-id="@d.Id" data-fullname="@d.FullName" class="btn btn-warning deposit-refund-dialog" data-toggle="modal" data-target="#depositRefundDialog">Deposit Refund</button>
+                        }
+
+                        if (d.HasDepositRefunded)
+                        {
+                            <button id="@d.Id" data-id="@d.Id" data-fullname="@d.FullName" class="btn btn-danger unsubcribe-dialog" data-toggle="modal" data-target="#unsubcribeDialog">Unsubcribe</button>
+                        }
+
+                    }
+                }
+            </td>
+        </tr>
+    }
+</table>
+
+<div id="depositRefundDialog" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Deposit Refund</h4>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("DepositRefund", "ManagerDashboard", FormMethod.Post, new { @id= "depositRefundForm" }))
+                {
+                    <fieldset>
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true)
+                        @if (@ViewBag.Message != null)
+                        {
+                            <div style="border: 1px solid red">
+                                @ViewBag.Message
+                            </div>
+                        }
+
+                        <div class="form-group">
+                            @*<p class="bg-info">Available deposit must be refunded for membership cancellation.</p>*@
+                            <p class="bg-primary">This user has no loan and available deposit so the deposit can be refunded.</p>
+                            <p class="bg-warning">Do you want to continue with deposit refund pending?</p>
+                            <input type="hidden" id="membershipid" name="membershipid" />
+                            <input type="hidden" id="id" name="id" />
+                        </div>
+                        <div class="form-group">
+                            <label for="fullname">Membership</label>
+                            <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Full Name" disabled>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class=" btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class=" btn btn-primary">Refund</button>
+                        </div>
+                    </fieldset>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="unsubcribeDialog" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Unsubcribe</h4>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("UnsubcribeMembership", "ManagerDashboard", FormMethod.Post, new { @id = "unsubcribeForm" }))
+                {
+                    <fieldset>
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true)
+                        @if (@ViewBag.Message != null)
+                        {
+                            <div style="border: 1px solid red">
+                                @ViewBag.Message
+                            </div>
+                        }
+                        <div class="form-group">
+                            <p class="bg-primary">This user has no loan and has been deposited, so membership is eligible for unsubcribtion.</p>
+                            <p class="bg-danger">Do you want to continue the membership will be terminated?</p>
+                            <input type="hidden" id="membershipid" name="membershipid" />
+                            <input type="hidden" id="id" name="id" />
+                        </div>
+                        <div class="form-group">
+                            <label for="fullname">Membership</label>
+                            <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Full Name" disabled>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class=" btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class=" btn btn-primary">Unsubcribe</button>
+                        </div>
+                    </fieldset>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script>
+        ; (function () {
+            'use strict';
+
+            setTimeout(() => {
+                $("#vb-message").hide();
+
+            }, 3000);
+
+
+            $(document).on("click", ".deposit-refund-dialog", function () {
+                var membershipId = $(this).data('id');
+                $("#depositRefundForm #membershipid").val(membershipId);
+                $("#depositRefundForm #id").val(membershipId);
+                var fullname = $(this).data('fullname');
+                $("#depositRefundForm #fullname").val(fullname);
+            });
+
+            $("#depositRefundDialog").on('hide.bs.modal', function () {
+                $('#depositRefundForm #membershipid').val('');
+                $('#depositRefundForm #id').val('');
+                $('#depositRefundForm #fullname').val('');
+            });
+
+            $(document).on("click", ".unsubcribe-dialog", function () {
+                var membershipId = $(this).data('id');
+                $("#unsubcribeForm #membershipid").val(membershipId);
+                $("#unsubcribeForm #id").val(membershipId);
+                var fullname = $(this).data('fullname');
+                $("#unsubcribeForm #fullname").val(fullname);
+            });
+
+            $("#unsubcribeDialog").on('hide.bs.modal', function () {
+                $('#unsubcribeForm #membershipid').val('');
+                $('#unsubcribeForm #id').val('');
+                $('#unsubcribeForm #fullname').val('');
+            });
+
+        })();
+
+    </script>
+}

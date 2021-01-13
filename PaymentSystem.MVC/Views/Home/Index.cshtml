@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+
+<div class="row">
+    <div class="col-md-4">
+        <h3>Manager</h3>
+        @Html.ActionLink("Manager Login", "Login","ManagerAuth", null, new { target = "_blank", @class = "btn btn-success" })
+    </div>
+    <div class="col-md-4">
+        <h3>Membership</h3>
+        @Html.ActionLink("Membership Login", "Login", "MembershipAuth", null, new { target = "_blank", @class = "btn btn-success" })
+    </div>
+    <div class="col-md-4">
+        <h3></h3>
+    </div>
+</div>

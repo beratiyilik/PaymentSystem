@@ -1,0 +1,31 @@
+﻿@using PaymentSystem.MVC.Models
+@using PaymentSystem.MVC.Filters
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Welcome Manager Dashboard</h2>
+
+@if (@ViewBag.Message != null)
+{
+    <div id="vb-message" style="border: 1px solid red">
+        @ViewBag.Message
+    </div>
+}
+
+
+
+@section Scripts
+{
+    <script>
+        ; (function () {
+            'use strict';
+
+            setTimeout(() => {
+                $("#vb-message").hide();
+
+            }, 3000);
+
+        })();
+    </script>
+}

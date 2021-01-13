@@ -1,0 +1,16 @@
+﻿@using PaymentSystem.MVC.Models;
+@using PaymentSystem.MVC.ConstantValues
+@using Newtonsoft.Json;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    TokenViewModel tokenViewModel = Session[Keys.MEMBERSHIP_SESSION_KEY] != null ? JsonConvert.DeserializeObject<TokenViewModel>(Session[Keys.MEMBERSHIP_SESSION_KEY].ToString()) : null;
+
+    var actionName = ViewContext.RouteData.Values["action"].ToString();
+
+    if (actionName != "Login" && (tokenViewModel == null || tokenViewModel.IsExpired))
+    {
+        Response.Redirect("~/MembershipAuth/Login?message=expires");
+    }
+
+}

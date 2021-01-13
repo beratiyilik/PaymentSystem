@@ -1,0 +1,141 @@
+﻿@using PaymentSystem.MVC.Filters
+@using PaymentSystem.MVC.Models
+@model  IEnumerable<PaymentSystem.MVC.Models.AccrualLoanViewModel>
+@{
+    ViewBag.Title = "Accrual Loans";
+}
+
+<h2>Accrual Loans</h2>
+
+@if (@ViewBag.Message != null)
+{
+    <div id="vb-message" style="border: 1px solid red">
+        @ViewBag.Message
+    </div>
+}
+
+<table class="table table-striped table-bordered table-responsive table-hover">
+    <tr>
+        <th>Membership</th>
+        <th>RefNumber</th>
+        <th>Type</th>
+        <th>Period</th>
+        <th>Identification / Tax</th>
+        <th>Amount</th>
+        <th>Expriry</th>
+        <th>Remaining Loan</th>
+        <th>Payments</th>
+        <th>Operations</th>
+    </tr>
+    @foreach (var d in Model)
+    {
+        var nbr = d.Membership.EntityType == PaymentSystem.Common.Enum.Enum.EntityType.LegalEntity ? d.Membership.TaxNumber : d.Membership.NationalIdentificationNumber;
+        var rl = d.HasLoan ? d.RemainingLoan.ToString("#.00") : "";
+        var clss = d.HasLoan && d.ExpiryDate <= DateTime.UtcNow ? "danger" : "";
+        <tr>
+            <td>@d.Membership.FullName</td>
+            <td>@d.RefNumber</td>
+            <td>@d.Type</td>
+            <td>@d.CreatedAt.ToString("MMM yyyy")</td>
+            <td>@nbr</td>
+            <td>@d.Amount.ToString("#.00")</td>
+            <td class="@clss">@d.ExpiryDate.ToString("dd MMM yyyy")</td>
+            <td>@rl</td>
+            <td>
+                <table class="table table-nostriped">
+                    @foreach (var item in d.CollectionRecords)
+                    {
+                        <tr>
+                            <td>@item.Amount.ToString("#.00")</td>
+                            <td>@item.CreatedAt.ToString("dd MMM yyyy")</td>
+                        </tr>
+                    }
+                </table>
+
+            </td>
+            <td>
+                @{
+                    if (d.Type == PaymentSystem.Common.Enum.Enum.AccrualLoanType.Invoice && d.HasLoan)
+                    {
+                        <button id="@d.Id" data-id="@d.Id" data-amount="@d.RemainingLoan" data-fullname="@d.Membership.FullName" class="btn btn-primary payment-dialog" data-toggle="modal" data-target="#paymentDialog">Pay</button>
+                    }
+                }
+            </td>
+        </tr>
+    }
+</table>
+
+<div id="paymentDialog" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Payment Page</h4>
+            </div>
+
+            <div class="modal-body">
+                @using (Html.BeginForm("Payment", "ManagerDashboard", FormMethod.Post, new { @id = "modalForm" }))
+                {
+                    <fieldset>
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true)
+                        @if (@ViewBag.Message != null)
+                        {
+                            <div style="border: 1px solid red">
+                                @ViewBag.Message
+                            </div>
+                        }
+                        <div class="form-group">
+                            <p class="bg-warning">Do you want to continue with payment pending?</p>
+                            <input type="hidden" id="id" name="id" />
+                        </div>
+                        <div class="form-group">
+                            <label for="fullname">Membership</label>
+                            <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Membership" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">Amount</label>
+                            <input type="text" class="form-control" id="amount" name="amount" placeholder="Amount">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class=" btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class=" btn btn-primary">Pay</button>
+                        </div>
+                    </fieldset>
+                }
+            </div>
+
+        </div>
+        </div>
+</div>
+
+
+@section Scripts
+{
+    <script>
+        ; (function () {
+            'use strict';
+
+            setTimeout(() => {
+                $("#vb-message").hide();
+
+            }, 3000);
+
+            $(document).on("click", ".payment-dialog", function () {
+                var id = $(this).data('id');
+                $(".modal-body #id").val(id);
+                var amount = $(this).data('amount');
+                $(".modal-body #amount").val(amount);
+                var fullname = $(this).data('fullname');
+                $(".modal-body #fullname").val(fullname);
+            });
+
+            $("#paymentDialog").on('hide.bs.modal', function () {
+                $('#id').val('');
+                $('#amount').val('');
+                $('#fullname').val('');
+            });
+
+        })();
+    </script>
+}

@@ -1,0 +1,47 @@
+﻿@model PaymentSystem.MVC.Models.UserViewModel
+@{
+    ViewBag.Title = "Membership Login";
+}
+
+@using (Html.BeginForm("Login", "MembershipAuth", FormMethod.Post))
+{
+    <fieldset>
+        <legend>Membership Login Page</legend>
+
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        @if (@ViewBag.Message != null)
+        {
+            <div style="border: 1px solid red">
+                @ViewBag.Message
+            </div>
+        }
+        <table>
+            <tr>
+                <td>@Html.LabelFor(a => a.UserName, new { @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(a => a.UserName, new { @class = "form-control" })</td>
+                <td>@Html.ValidationMessageFor(a => a.UserName)</td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(a => a.Password, new { @class = "form-control" })
+                </td>
+                <td>
+                    @Html.PasswordFor(a => a.Password, new { @class = "form-control" })
+                </td>
+                <td>
+                    @Html.ValidationMessageFor(a => a.Password)
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <input class="form-control btn btn-primary" type="submit" value="Login" />
+                </td>
+                <td></td>
+            </tr>
+        </table>
+    </fieldset>
+    @Html.HiddenFor(m => m.UserType, new { Value = (int)PaymentSystem.Common.Enum.Enum.UserType.Membership });
+}
+

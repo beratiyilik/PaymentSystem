@@ -1,0 +1,20 @@
+﻿@using PaymentSystem.MVC.Models;
+@using PaymentSystem.MVC.ConstantValues
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = "Manager Dashboard";
+    TokenViewModel tokenViewModel = Session[Keys.MANAGER_SESSION_KEY] != null ? JsonConvert.DeserializeObject<TokenViewModel>(Session[Keys.MANAGER_SESSION_KEY].ToString()) : null;
+}
+
+<fieldset>
+    <legend> Manager Dashboard </legend>
+
+    @if (Session[Keys.MANAGER_SESSION_KEY] != null)
+    {
+
+        <text>
+            Welcome @tokenViewModel.UserName
+        </text>
+    }
+</fieldset>
+

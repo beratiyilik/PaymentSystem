@@ -1,0 +1,61 @@
+﻿@using PaymentSystem.MVC.Models
+@using PaymentSystem.MVC.Filters
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="container body-content">
+
+        <nav class="navbar navbar-dark bg-primary">
+            <span class="navbar-text">
+                Manager
+            </span>
+        </nav>
+
+        @Html.ActionLink("Dashboard Page", "Index", "ManagerDashboard", new { @class = "btn btn-warning" })
+
+        <div id="showmodal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    @{
+                        Html.RenderPartial("_newMembershipParticalView", new UserViewModel() { });
+                    }
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <button class="btn btn-primary" id='open' data-toggle="modal" data-target="#showmodal">New Membership</button>
+
+        <div id="modalenquiry" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    @{
+                        Html.RenderPartial("_membershipEnquiryParticalView", new MembershipFilter() { });
+                    }
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <button class="btn btn-primary" id='open' data-toggle="modal" data-target="#modalenquiry">Membership Enquiry</button>
+
+
+        @Html.ActionLink("Accrual Loans", "AccrualLoans", "ManagerDashboard", new { @class = "btn btn-primary" })
+
+        @Html.ActionLink("Logout", "Logout", "ManagerAuth", null, new { @class = "btn btn-danger" })
+
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
